@@ -1,0 +1,212 @@
+html {
+	scroll-behavior: smooth;
+	height: 100%;
+}
+
+body {
+	color: rgb(18, 18, 18);
+	animation: 8s infinite bgcolorchange;
+	background-image: url('imgs/background-overlay.png');
+	height: 100%;
+	cursor: default;
+	font-family: 'Titillium Web', sans-serif;
+}
+
+@keyframes bgcolorchange {
+	0% {
+		background-color: rgb(220, 199, 255);
+	}
+	20% {
+		background-color: rgb(189, 255, 230);
+	}
+	40% {
+		background-color: rgb(232, 255, 179);
+	}
+	60% {
+		background-color: rgb(255, 208, 171);
+	}
+	80% {
+		background-color: rgb(250, 160, 160);
+	}
+	100% {
+		background-color: rgb(220, 199, 255);
+	}
+}
+
+@-webkit-keyframes bgcolorchange {
+    0%   {background: rgb(220, 199, 255);}
+    25%  {background: rgb(189, 255, 230);}
+    50%  {background: rgb(232, 255, 179);}
+    75%  {background: rgb(250, 160, 160);}
+    100% {background: rgb(255, 200, 200);}
+}
+
+
+.main-cont {
+	display: flex;
+	height: 100%;
+}
+
+.mytab {
+	color: gray;
+}
+
+.mytab.active {
+	color: rgb(18, 18, 18);
+}
+
+
+.content-cont {
+	margin: auto;
+	background-color: white;
+	border-radius: 18px;
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+	min-width: 660px;
+	width: 750px;
+	height: 550px;
+	padding: 20px;
+	position: relative;
+}
+
+#open-new {
+	font-size: 50px;
+	position: absolute;
+	top: 0;
+	right: 20px;
+	pointer-events: all;
+	color: grey;
+}
+
+#open-new:hover {
+	color: rgb(18, 18, 18);
+}
+
+#close-new {
+	font-size: 50px;
+	position: absolute;
+	top: 0;
+	right: 20px;
+	pointer-events: all;
+	transform: rotate(45deg);
+	color: rgb(18, 18, 18);
+}
+
+#open-sort {
+	font-size: 40px;
+	position: absolute;
+	top: 9px;
+	right: 80px;
+	color: grey;
+}
+
+#open-sort:hover {
+	color: rgb(18, 18, 18);
+}
+
+#close-sort {
+	font-size: 40px;
+	position: absolute;
+	top: 9px;
+	right: 80px;
+	color: rgb(18, 18, 18);
+}
+
+.sort-cont {
+	width: 200px;
+	height: 263px;
+	position: absolute;
+	background-color: white;
+	z-index: 10;
+	border-radius: 0 0 10px 10px;
+	left: 58%;
+}
+
+.sort-list {
+	font-size: 20px;
+}
+
+.sort-option:hover {
+	background-color: rgb(227, 227, 227);
+}
+
+.sort-arrow {
+	position: absolute;
+	left: 150px;
+}
+
+.new-todo-cont {
+	width: 540px;
+	border-radius: 0 0 10px 10px;
+	background-color: white;
+	top: 0;
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+	position: absolute;
+	left: calc(50% - 270px);
+	z-index: 10;
+	pointer-events: all;
+}
+
+.priority-choose {
+	width: 145px;
+	background-color: rgb(237, 237, 237);
+	border-radius: 25px
+}
+
+.priority-menu-icon {
+	width: 30px;
+	height: 30px;
+}
+
+.priority-outline {
+	position: absolute;
+	width: 30px;
+	height: 30px;
+}
+
+.todo-cont {
+	overflow-y: scroll;
+	overflow-x: hidden;
+	height: 423px;
+}
+
+.mid-col {
+	min-height: 140px;
+	overflow: hidden;
+	word-wrap: break-word;
+}
+
+.todo-row:hover {
+	background-color: rgb(227, 227, 227);
+}
+
+.icon{
+	color: rgb(18, 18, 18);
+}
+
+a:hover + .icon{
+	color: rgb(18, 18, 18);
+}
+
+.title {
+	position: relative;
+	top: 47px
+}
+
+.priority-icon {
+	width: 30px;
+	height: 30px;
+}
+
+.sign-out {
+	position: absolute;
+	bottom: 12px;
+	right: 0;
+}
+
+.cursor-pointer {
+	cursor: pointer;
+}
+
+.hidden {
+	display: none;
+}
