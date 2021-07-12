@@ -1,0 +1,186 @@
+{% extends "layout.html" %}
+{% block content %}
+	<!-- Tabs -->
+	<ul class="nav nav-tabs" role="tablist">
+		<li class="nav-item" role="presentation">
+			<button class="nav-link active mytab" id="todo-tab" data-bs-toggle="tab" data-bs-target="#todo" type="button" role="tab" aria-controls="todo" aria-selected="true">To Do</button>
+		</li>
+		<li class="nav-item" role="presentation">
+			<button class="nav-link mytab" id="completed-tab" data-bs-toggle="tab" data-bs-target="#completed" type="button" role="tab" aria-controls="completed" aria-selected="false">Completed</button>
+		</li>
+	</ul>
+
+	<!-- Top menu buttons -->
+	<i class="bi bi-plus cursor-pointer" id="open-new"></i>
+	<i class="bi bi-plus hidden cursor-pointer" id="close-new"></i>
+	<i class="bi bi-filter cursor-pointer" id="open-sort"></i>
+	<i class="bi bi-filter-left hidden cursor-pointer" id="close-sort"></i>
+
+	<!-- Sorting -->
+	<div class="sort-cont hidden container-fluid border-start border-2 border-bottom border-end" value="{{ sort_id }}">
+		<ul class="list-unstyled sort-list">
+			<li class="ps-2 pb-2 pt-2 mt-1 border-bottom cursor-pointer sort-option" value="{% if sort_id == 1 %}1{% elif sort_id == 2 %}2{% else %}0{% endif%}">Title <i value="1" id="a1" class="sort-arrow {% if sort_id != 1 %} hidden {% endif %} bi bi-arrow-up"></i><i value="2" id="a2" class="sort-arrow {% if sort_id != 2 %} hidden {% endif %} bi bi-arrow-down"></i></li>
+			<li class="ps-2 pb-2 pt-2 border-bottom cursor-pointer sort-option" value="{% if sort_id == 3 %}1{% elif sort_id == 4 %}2{% else %}0{% endif%}">Date Due<i value="3" id="a3" class="sort-arrow {% if sort_id != 3 %} hidden {% endif %} bi bi-arrow-up"></i><i value="4" id="a4" class="sort-arrow {% if sort_id != 4 %} hidden {% endif %} bi bi-arrow-down"></i></li>
+			<li class="ps-2 pb-2 pt-2 border-bottom cursor-pointer sort-option" value="{% if sort_id == 5 %}1{% elif sort_id == 6 %}2{% else %}0{% endif%}">Date Created<i value="5" id="a5" class="sort-arrow {% if sort_id != 5 %} hidden {% endif %} bi bi-arrow-up"></i><i value="6" id="a6" class="sort-arrow {% if sort_id != 6 %} hidden {% endif %} bi bi-arrow-down"></i></li>
+			<li class="ps-2 pb-2 pt-2 cursor-pointer sort-option" value="{% if sort_id == 7 %}1{% elif sort_id == 8 %}2{% else %}0{% endif%}">Priority<i value="7" id="a7" class="sort-arrow {% if sort_id != 7 %} hidden {% endif %} bi bi-arrow-up"></i><i value="8" id="a8" class="sort-arrow {% if sort_id != 8 %} hidden {% endif %} bi bi-arrow-down"></i></li>
+		</ul>
+		<form method="POST">
+			{{ sort_form.hidden_tag() }}
+			{{ sort_form.sort_id(class="hidden") }}
+			{{ sort_form.submit(class="btn btn-outline-info w-100") }}
+		</form>
+	</div>
+
+	<!-- New todo form -->
+	<script type="text/javascript">var title_error = false</script>
+	<script type="text/javascript">var note_error = false</script>
+	<div class="hidden new-todo-cont container-fluid">
+		<script type="text/javascript">var error = false</script>
+		<form method="POST" class="px-4" id="new-todo-form">
+		{{ todo_form.hidden_tag() }}
+			<fieldset class="form-group">
+				<legend class="text-center border-bottom mb-2 mt-2" id="new-todo-header">New Todo</legend>
+				<div class="hidden">{{ todo_form.todo_id }}</div>
+				<div class="form-group mb-4" id="form-title">
+					{{ todo_form.title.label(class="h4")}}
+					{{ todo_form.title(class="form-control form-control-lg") }}
+				</div>
+				<div class="form-group mb-2">
+					{{ todo_form.dueDate.label(class="h4 me-3")}}
+					{{ todo_form.dueDate(class="dtpick form-control w-25") }}
+				</div>
+				<div class="hidden">{{ todo_form.priority }}</div>
+				<div class="text-center">
+					{{ todo_form.priority.label(class="h4") }}
+					<div class="priority-choose py-2 mx-auto">
+						<img class="hidden cursor-pointer priority-outline" id="priority-outline-0" src="{{ url_for('static', filename='css/imgs/priority-outline.png') }}".png>
+						<img class="priority-menu-icon me-2 cursor-pointer" id="priority-menu-icon-0" src="{{ url_for('static', filename='css/imgs/priority-green.png') }}".png>
+						<img class="hidden cursor-pointer priority-outline" id="priority-outline-1" src="{{ url_for('static', filename='css/imgs/priority-outline.png') }}".png>
+						<img class="priority-menu-icon me-2 cursor-pointer" id="priority-menu-icon-1" src="{{ url_for('static', filename='css/imgs/priority-yellow.png') }}".png>
+						<img class="hidden cursor-pointer priority-outline" id="priority-outline-2" src="{{ url_for('static', filename='css/imgs/priority-outline.png') }}".png>
+						<img class="priority-menu-icon cursor-pointer" id="priority-menu-icon-2" src="{{ url_for('static', filename='css/imgs/priority-red.png') }}".png>
+					</div>
+				</div>
+				<div class="form-group mb-4" id="form-note">
+					{{ todo_form.note.label(class="h4")}}
+					{{ todo_form.note(class="form-control") }}
+				</div>
+			</fieldset>
+			<div class="form-group mb-4 text-center">
+				{{ todo_form.submit(class="btn btn-outline-info todo-confirm") }}
+			</div>
+		</form>
+	</div>
+
+	<!-- Todo's -->
+	<script type="text/javascript">var last_todo = ''</script>
+	<script type="text/javascript">var last_completed = ''</script>
+		<div class="tab-content" id="myTabContent">
+			<div class="tab-pane fade show active" id="todo" role="tabpanel" aria-labelledby="todo-tab">
+				<div class="todo-cont">
+					{% if todos|length %}
+						{% for todo in todos if not todo.completion %}
+							<script type="text/javascript">last_todo = '#{{ todo.id }}'</script>
+							<div class="row border-bottom todo-row align-items-center" id="{{ todo.id }}" priority="{{ todo.priority }}">
+								<div class="col-1">
+									<div class="text-end">
+										<i class="bi bi-three-dots-vertical" id="icon-placeholder"></i>
+										<div class="hidden" id="icons">
+											<a href="{{ url_for('todos.mark_todo', todo_id=todo.id, sort_id=sort_id) }}"><i class="icon bi bi-check-square"></i></a><br>
+											<a href="{{ url_for('todos.delete_todo', todo_id=todo.id, sort_id=sort_id) }}"><i class="icon bi bi-x-square"></i></a><br>
+											<i class="icon edit-icon cursor-pointer bi bi-pencil"></i>
+										</div>
+									</div>
+								</div>
+								<div class="col-7 mid-col pt-2">
+									<ul class="list-unstyled">
+										<li class="h4 title" id="title-text">{{ todo.title }}</li>
+										<span class="hidden" id="secondary-content">
+											<li><small class="text-secondary">Created: </small>{{ todo.createdDate.strftime('%m/%d/%Y') }}</li><br>
+											{% if todo.note %}
+												<li><small class="cursor-pointer view-note" value="1">~ View Note</small></li>
+												<li class="hidden ms-4" id="note-text">{{ todo.note }}</li>
+											{% else %}
+												<li><small class="cursor-pointer add-note">+ Add Note</small></li>
+											{% endif %}
+										</span>
+									</ul>
+								</div>
+								<div class="col-2">
+									{% if todo.dueDate  %}
+										<span class="due-date-text"><small class="text-secondary hidden" id="secondary-content">Due:<br></small>{{ todo.dueDate }}</span>
+									{% endif %}
+								</div>
+								<div class="col-2 text-center">
+									{% if todo.priority == 0 %}
+										<img class="priority-icon" src="{{ url_for('static', filename='css/imgs/priority.png') }}">
+									{% elif todo.priority == 1 %}
+										<img class="priority-icon" src="{{ url_for('static', filename='css/imgs/priority-green.png') }}">
+									{% elif todo.priority == 2 %}
+										<img class="priority-icon" src="{{ url_for('static', filename='css/imgs/priority-yellow.png') }}">
+									{% else %}
+										<img class="priority-icon" src="{{ url_for('static', filename='css/imgs/priority-red.png') }}".png>
+									{% endif %}
+								</div>
+							</div>
+						{% endfor %}
+					{% endif %}
+				</div>
+			</div>
+			<div class="tab-pane fade" id="completed" role="tabpanel" aria-labelledby="completed-tab">
+				<div class="todo-cont">
+					{% if todos|length %}
+						{% for todo in todos if todo.completion %}
+							<script type="text/javascript">last_completed = '#{{ todo.id }}'</script>
+							<div class="row border-bottom todo-row align-items-center" value="complete" id="{{ todo.id }}">
+								<div class="col-1">
+									<div class="text-end">
+										<i class="bi bi-three-dots-vertical" id="icon-placeholder"></i>
+										<div class="hidden" id="icons">
+											<a href="{{ url_for('todos.mark_todo', todo_id=todo.id, sort_id=sort_id) }}"><i class="icon bi bi-arrow-counterclockwise"></i></a><br>
+											<a href="{{ url_for('todos.delete_todo', todo_id=todo.id, sort_id=sort_id) }}"><i class="icon bi bi-x-square"></i></a><br>
+										</div>
+									</div>
+								</div>
+								<div class="col-7 mid-col pt-2">
+									<ul class="list-unstyled">
+										<li class="h4 title" id="title-text">{{ todo.title }}</li>
+										<span class="hidden" id="secondary-content">
+											<li><small class="text-secondary">Created: </small>{{ todo.createdDate.strftime('%m/%d/%Y') }}</li><br>
+											{% if todo.note %}
+												<li><small class="cursor-pointer view-note" value="1">~ View Note</small></li>
+												<li class="hidden ms-4" id="note-text">{{ todo.note }}</li>
+											{% endif %}
+										</span>
+									</ul>
+								</div>
+								<div class="col-2">
+									{% if todo.dueDate %}
+										<span><small class="text-secondary hidden" id="secondary-content">Due:<br></small>{{ todo.dueDate }}</span>
+									{% endif %}
+								</div>
+								<div class="col-2 text-center">
+									{% if todo.priority == 0 %}
+										<img class="priority-icon" src="{{ url_for('static', filename='css/imgs/priority.png') }}">
+									{% elif todo.priority == 1 %}
+										<img class="priority-icon" src="{{ url_for('static', filename='css/imgs/priority-green.png') }}">
+									{% elif todo.priority == 2 %}
+										<img class="priority-icon" src="{{ url_for('static', filename='css/imgs/priority-yellow.png') }}">
+									{% else %}
+										<img class="priority-icon" src="{{ url_for('static', filename='css/imgs/priority-red.png') }}".png>
+									{% endif %}
+								</div>
+							</div>
+						{% endfor %}
+					{% endif %}
+				</div>
+			</div>
+		</div>
+
+	<!-- Sign out -->
+	<div class="border-top pb-5 text-end position-relative">
+		<small class="text-muted sign-out">
+			Ready to leave? <a href="{{ url_for('users.logout') }}">Sign Out</a>
+		</small>
+	</div>
+{% endblock content %}
